@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class MoblieRotate : MonoBehaviour {
 
-	public float speed = 1.0f;
+	public float speedPos = 1.0f;
+	public float speedRot = 1.0f;
 	public float speedUpMultiplier = 0.5f;
 	public Camera cam;
 	Vector3 initPos;
@@ -35,8 +36,8 @@ public class MoblieRotate : MonoBehaviour {
 		}
 		//Debug.Log(transform.rotation.eulerAngles);
 #else
-		transform.Translate(Input.acceleration.x * (Time.deltaTime * speed * 0.01f), 0f, 0f, Space.World);
-		transform.Rotate(0f, 0f, Input.acceleration.y * (Time.deltaTime * speed), Space.World);
+		transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos), 0f, 0f, Space.World);
+		transform.Rotate(0f, 0f, Input.acceleration.y * (Time.deltaTime * speedRot), Space.World);
 #endif
 		if (transform.rotation.eulerAngles.z > 180f) {
 			Quaternion rot = Quaternion.Euler(0f, 0f, 0f);
