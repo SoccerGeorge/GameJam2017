@@ -35,7 +35,7 @@ public class MoblieRotate : MonoBehaviour {
 		}
 		//Debug.Log(transform.rotation.eulerAngles);
 #else
-		transform.Translate(-Input.acceleration.x * (Time.deltaTime * speed * 0.1f), 0f, 0f, Space.World);
+		transform.Translate(Input.acceleration.x * (Time.deltaTime * speed * 0.01f), 0f, 0f, Space.World);
 		transform.Rotate(0f, 0f, Input.acceleration.y * (Time.deltaTime * speed), Space.World);
 #endif
 		if (transform.rotation.eulerAngles.z > 180f) {
