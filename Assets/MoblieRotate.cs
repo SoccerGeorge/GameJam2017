@@ -7,7 +7,7 @@ public class MoblieRotate : MonoBehaviour {
 
 	public float speed = 1.0f;
 	public float speedUpMultiplier = 0.5f;
-	public Text info;
+	public Camera cam;
 	Vector3 initPos;
 	Quaternion initRot;
 
@@ -28,10 +28,10 @@ public class MoblieRotate : MonoBehaviour {
 		if (Input.GetKey(KeyCode.RightArrow))
 			transform.Translate((Time.deltaTime), 0f, 0f, Space.World);
 		if (Input.GetKey(KeyCode.UpArrow)) {
-			transform.Rotate(0f, 0f, (Time.deltaTime), Space.World);
+			transform.Rotate(0f, 0f, (Time.deltaTime * 8f), Space.World);
 		}
 		if (Input.GetKey(KeyCode.DownArrow)) {
-			transform.Rotate(0f, 0f, -(Time.deltaTime), Space.World);
+			transform.Rotate(0f, 0f, -(Time.deltaTime * 8f), Space.World);
 		}
 		//Debug.Log(transform.rotation.eulerAngles);
 #else
@@ -50,11 +50,14 @@ public class MoblieRotate : MonoBehaviour {
 		speedUpMultiplier = Mathf.Abs(transform.rotation.eulerAngles.z / 30f) * 0.5f;
 		if (speedUpMultiplier < 0.5f)
 			speedUpMultiplier = 0.5f;
+		
+		cam.transform.Translate(0f, -(Time.deltaTime * speedUpMultiplier), 0f, Space.World);
 	}
 
 	public void OnButton()
 	{
 		transform.position = initPos;
 		transform.rotation = initRot;
+		cam.transform.position = new Vector3(0f, 1f, -10f);
 	}
 }
