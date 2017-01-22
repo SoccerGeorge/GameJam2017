@@ -14,6 +14,7 @@ public class MoblieRotate : MonoBehaviour {
 	public float camLimit = -64;
 	public GameObject explosion;
 	public PathGenerator pathGen;
+	public TextMesh scoreTxt;
 	float speedUpMultiplier;
 	Vector3 initPos;
 	Quaternion initRot;
@@ -70,6 +71,7 @@ public class MoblieRotate : MonoBehaviour {
 		}
 
 		UpdateScore();
+		scoreTxt.text = currentScore.ToString();
 	}
 
 	public void OnButton () {
