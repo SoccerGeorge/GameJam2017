@@ -18,6 +18,7 @@ public class MoblieRotate : MonoBehaviour {
 	float speedUpMultiplier;
 	Vector3 initPos;
 	Quaternion initRot;
+	Vector3 initCamPos;
 	GameObject explosionInstance;
 	bool stopUpdatingCam = false;
 
@@ -28,6 +29,7 @@ public class MoblieRotate : MonoBehaviour {
 		speedUpMultiplier = speedUpMultiplierDefault;
 		initPos = transform.position;
 		initRot = transform.rotation;
+		initCamPos = cam.transform.position;
 		currentScore = 0;
 	}
 
@@ -66,7 +68,7 @@ public class MoblieRotate : MonoBehaviour {
 			cam.transform.Translate(0f, -(Time.deltaTime * speedUpMultiplier), 0f, Space.World);
 		
 		if (cam.transform.position.y < camLimit) {
-			cam.transform.position = new Vector3(0f, camLimit, -10f);
+			cam.transform.position = new Vector3(initCamPos.x, camLimit, initCamPos.z);
 			stopUpdatingCam = true;
 		}
 
@@ -77,7 +79,7 @@ public class MoblieRotate : MonoBehaviour {
 	public void OnButton () {
 		transform.position = initPos;
 		transform.rotation = initRot;
-		cam.transform.position = new Vector3(0f, -6.25f, -10f);
+		cam.transform.position = initCamPos;
 		stopUpdatingCam = false;
 		currentScore = 0;
 		gameObject.SetActive(true);
@@ -100,7 +102,7 @@ public class MoblieRotate : MonoBehaviour {
 			currentScore += scoreAddition/2;
 		}
 		else {
-			currentScore += 1;
+			currentScore += 0;
 		}
 	}
 }

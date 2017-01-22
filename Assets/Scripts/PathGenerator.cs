@@ -15,7 +15,6 @@ public class PathGenerator : MonoBehaviour {
 	public float cosYMultiplier = 1f;
 	[Range(-1f, 1f)]
 	public float offsetX = 0f;
-	[Range(0.1f, 5f)]
 	public float offsetY = 0.1f;
 	public int numDots = 20;
 	public int startOffset = 2;
