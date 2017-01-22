@@ -53,7 +53,7 @@ public class MoblieRotate : MonoBehaviour {
 #else
 		transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos), 0f, 0f, Space.World);
 		transform.Rotate(0f, 0f, -Input.acceleration.y * (Time.deltaTime * speedRot), Space.World);
-		scoreTxt.text = -Input.acceleration.y.ToString("F4");
+		scoreTxt.text = (-Input.acceleration.y).ToString("F4");
 #endif
 		if (transform.rotation.eulerAngles.z > 180f) {
 			Quaternion rot = Quaternion.Euler(0f, 0f, 0f);
