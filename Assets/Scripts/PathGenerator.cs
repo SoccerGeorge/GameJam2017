@@ -42,7 +42,7 @@ public class PathGenerator : MonoBehaviour {
 
 		for (int i=startOffset; i<(numDots+startOffset); i++) {
 			float x = sinMultiplier * Mathf.Sin((-i * offsetY) * sinYMultiplier) + cosMultiplier * Mathf.Cos((-i * offsetY) * cosYMultiplier) + offsetX;
-			GameObject pathDot = Instantiate(dot, new Vector3(x, (-i * offsetY)), Quaternion.identity);
+			GameObject pathDot = Instantiate(dot, new Vector3(x *3f, (-i * offsetY)), Quaternion.identity);
 			pathDot.name = string.Format("PathDot_{0}", i - startOffset);
 			pathDot.transform.parent = transform;
 		}

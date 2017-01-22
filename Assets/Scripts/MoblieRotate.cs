@@ -35,6 +35,9 @@ public class MoblieRotate : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		// Don't run if paused
+		if (Time.timeScale == 0) return;
+
 		transform.Translate(0f, -(Time.deltaTime * speedUpMultiplier), 0f, Space.World);
 #if UNITY_EDITOR
 		if (Input.GetKey(KeyCode.LeftArrow))
@@ -50,6 +53,7 @@ public class MoblieRotate : MonoBehaviour {
 #else
 		transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos), 0f, 0f, Space.World);
 		transform.Rotate(0f, 0f, -Input.acceleration.y * (Time.deltaTime * speedRot), Space.World);
+		scoreTxt.text = -Input.acceleration.y.ToString("F4");
 #endif
 		if (transform.rotation.eulerAngles.z > 180f) {
 			Quaternion rot = Quaternion.Euler(0f, 0f, 0f);
@@ -58,6 +62,13 @@ public class MoblieRotate : MonoBehaviour {
 		else if (transform.rotation.eulerAngles.z > 90f) {
 			Quaternion rot = Quaternion.Euler(0f, 0f, 90f);
 			transform.rotation = rot;
+		}
+
+		if (transform.position.x < -10f) {
+			transform.position = new Vector3(-10f, transform.position.y, transform.position.z);
+		}
+		else if (transform.position.x > 10f) {
+			transform.position = new Vector3(10f, transform.position.y, transform.position.z);
 		}
 
 		speedUpMultiplier = Mathf.Abs(transform.rotation.eulerAngles.z / 30f) * speedUpMultiplierDefault;
@@ -73,7 +84,7 @@ public class MoblieRotate : MonoBehaviour {
 		}
 
 		UpdateScore();
-		scoreTxt.text = currentScore.ToString();
+		//scoreTxt.text = currentScore.ToString();
 	}
 
 	public void OnButton () {
@@ -93,16 +104,17 @@ public class MoblieRotate : MonoBehaviour {
 	}
 
 	void UpdateScore () {
-		float currentPathPosX = pathGen.GetPathLocation(transform.position.y);
-		float posXDiff = Mathf.Abs(currentPathPosX - transform.position.x);
-		if (posXDiff < pathTolerance) {
-			currentScore += scoreAddition;
-		}
-		else if (posXDiff < pathTolerance * 2f) {
-			currentScore += scoreAddition/2;
-		}
-		else {
-			currentScore += 0;
+		if (transform.position.y > -pathGen.startOffset) return;
+
+		if (Mathf.Abs(transform.position.y % pathGen.offsetY) < 0.5f) {
+			float currentPathPosX = pathGen.GetPathLocation(transform.position.y);
+			float posXDiff = Mathf.Abs(currentPathPosX - transform.position.x);
+			if (posXDiff < pathTolerance) {
+				currentScore += scoreAddition;
+			}
+			else if (posXDiff < pathTolerance * 2f) {
+				currentScore += scoreAddition/2;
+			}
 		}
 	}
 }
