@@ -21,6 +21,8 @@ public class MoblieRotate : MonoBehaviour {
 	Vector3 initCamPos;
 	GameObject explosionInstance;
 	bool stopUpdatingCam = false;
+	float fallSpeed;
+	Button replay;
 
 	public int currentScore { get; set; }
 
@@ -31,6 +33,10 @@ public class MoblieRotate : MonoBehaviour {
 		initRot = transform.rotation;
 		initCamPos = cam.transform.position;
 		currentScore = 0;
+		fallSpeed = 0f;
+
+		replay = GameObject.FindGameObjectWithTag("UI").transform.Find("replayButton").GetComponent<Button>();
+		replay.onClick.AddListener(OnReplayButton);
 	}
 
 	// Update is called once per frame
@@ -52,8 +58,14 @@ public class MoblieRotate : MonoBehaviour {
 		}
 #else
 		transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos), 0f, 0f, Space.World);
-		transform.Rotate(0f, 0f, -Input.acceleration.y * (Time.deltaTime * speedRot), Space.World);
-		scoreTxt.text = (-Input.acceleration.y).ToString("F4");
+		if ((-Input.acceleration.y) > 0.1f) || ((-Input.acceleration.y) < 0.1f))
+			fallSpeed += (-Input.acceleration.y);
+
+		fallSpeed = Mathf.Clamp(fallSpeed, -1f, 1f);
+
+		transform.Rotate(0f, 0f, fallSpeed * (Time.deltaTime * speedRot), Space.World);
+
+		cam.transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos / 2f), 0f, 0f, Space.World);
 #endif
 		if (transform.rotation.eulerAngles.z > 180f) {
 			Quaternion rot = Quaternion.Euler(0f, 0f, 0f);
@@ -64,11 +76,18 @@ public class MoblieRotate : MonoBehaviour {
 			transform.rotation = rot;
 		}
 
-		if (transform.position.x < -10f) {
+		if (transform.position.x < -8f) {
 			transform.position = new Vector3(-10f, transform.position.y, transform.position.z);
 		}
-		else if (transform.position.x > 10f) {
+		else if (transform.position.x > 8f) {
 			transform.position = new Vector3(10f, transform.position.y, transform.position.z);
+		}
+
+		if (cam.transform.position.x < -2f) {
+			cam.transform.position = new Vector3(-2f, cam.transform.position.y, cam.transform.position.z);
+		}
+		else if (cam.transform.position.x > 2f) {
+			cam.transform.position = new Vector3(2f, cam.transform.position.y, cam.transform.position.z);
 		}
 
 		speedUpMultiplier = Mathf.Abs(transform.rotation.eulerAngles.z / 30f) * speedUpMultiplierDefault;
@@ -82,39 +101,41 @@ public class MoblieRotate : MonoBehaviour {
 			cam.transform.position = new Vector3(initCamPos.x, camLimit, initCamPos.z);
 			stopUpdatingCam = true;
 		}
-
-		UpdateScore();
-		//scoreTxt.text = currentScore.ToString();
 	}
 
-	public void OnButton () {
+	void LateUpdate () {
+		scoreTxt.text = currentScore.ToString();
+	}
+
+	public void OnReplayButton () {
 		transform.position = initPos;
 		transform.rotation = initRot;
 		cam.transform.position = initCamPos;
 		stopUpdatingCam = false;
 		currentScore = 0;
+		fallSpeed = 0f;
 		gameObject.SetActive(true);
 		if (explosionInstance != null)
 			Destroy(explosionInstance);
+		pathGen.RandomGenerate();
+		replay.gameObject.SetActive(false);
 	}
 
 	void OnTriggerEnter2D (Collider2D other) {
-		explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
-		gameObject.SetActive(false);
+		if (other.gameObject.tag == "Dot") {
+			currentScore += 10;
+		}
+		else if (other.gameObject.tag == "Obstacle") {
+			currentScore -= 2;
+		}
+		else {
+			explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
+			gameObject.SetActive(false);
+			Invoke("ShowReplay", 1f);
+		}
 	}
 
-	void UpdateScore () {
-		if (transform.position.y > -pathGen.startOffset) return;
-
-		if (Mathf.Abs(transform.position.y % pathGen.offsetY) < 0.5f) {
-			float currentPathPosX = pathGen.GetPathLocation(transform.position.y);
-			float posXDiff = Mathf.Abs(currentPathPosX - transform.position.x);
-			if (posXDiff < pathTolerance) {
-				currentScore += scoreAddition;
-			}
-			else if (posXDiff < pathTolerance * 2f) {
-				currentScore += scoreAddition/2;
-			}
-		}
+	void ShowReplay() {
+		replay.gameObject.SetActive(true);
 	}
 }
