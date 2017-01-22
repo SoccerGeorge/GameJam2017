@@ -58,7 +58,7 @@ public class MoblieRotate : MonoBehaviour {
 		}
 #else
 		transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos), 0f, 0f, Space.World);
-		if (((-Input.acceleration.y) > 0.1f) || ((-Input.acceleration.y) < 0.1f))
+		if (((-Input.acceleration.y) > 0.2f) || ((-Input.acceleration.y) < 0.2f))
 			fallSpeed += (-Input.acceleration.y);
 
 		fallSpeed = Mathf.Clamp(fallSpeed, -1f, 1f);
