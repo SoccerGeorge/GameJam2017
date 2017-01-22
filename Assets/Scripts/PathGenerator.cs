@@ -13,9 +13,11 @@ public class PathGenerator : MonoBehaviour {
 	public float sinYMultiplier = 1f;
 	[Range(-3f, 3f)]
 	public float cosYMultiplier = 1f;
+	[Range(-3f, 3f)]
+	public float pathMultiplier = 3f;
 	[Range(-1f, 1f)]
 	public float offsetX = 0f;
-	public float offsetY = 0.1f;
+	public float offsetY = 5f;
 	public int numDots = 20;
 	public int startOffset = 2;
 
@@ -30,7 +32,7 @@ public class PathGenerator : MonoBehaviour {
 	}
 
 	public float GetPathLocation (float posY) {
-		return sinMultiplier * Mathf.Sin(posY * sinYMultiplier) + cosMultiplier * Mathf.Cos(posY * cosYMultiplier) + offsetX;
+		return pathMultiplier * (sinMultiplier * Mathf.Sin(posY * sinYMultiplier) + cosMultiplier * Mathf.Cos(posY * cosYMultiplier) + offsetX);
 	}
 
 	public void GeneratePath () {
@@ -41,10 +43,21 @@ public class PathGenerator : MonoBehaviour {
 		}
 
 		for (int i=startOffset; i<(numDots+startOffset); i++) {
-			float x = sinMultiplier * Mathf.Sin((-i * offsetY) * sinYMultiplier) + cosMultiplier * Mathf.Cos((-i * offsetY) * cosYMultiplier) + offsetX;
-			GameObject pathDot = Instantiate(dot, new Vector3(x *3f, (-i * offsetY)), Quaternion.identity);
+			float x = pathMultiplier * (sinMultiplier * Mathf.Sin((-i * offsetY) * sinYMultiplier) + cosMultiplier * Mathf.Cos((-i * offsetY) * cosYMultiplier) + offsetX);
+			GameObject pathDot = Instantiate(dot, new Vector3(x, (-i * offsetY)), Quaternion.identity);
 			pathDot.name = string.Format("PathDot_{0}", i - startOffset);
 			pathDot.transform.parent = transform;
 		}
+	}
+
+	public void RandomGenerate () {
+		Random.InitState((int)(System.DateTime.Now.Ticks >> 32));
+		sinMultiplier = Random.Range(-3f, 3f);
+		cosMultiplier = Random.Range(-3f, 3f);
+		sinYMultiplier = Random.Range(-3f, 3f);
+		cosYMultiplier = Random.Range(-3f, 3f);
+		pathMultiplier = Random.Range(-3f, 3f);
+		offsetX = Random.Range(-1f, 1f);
+		GeneratePath();
 	}
 }
