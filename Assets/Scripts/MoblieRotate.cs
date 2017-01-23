@@ -15,6 +15,8 @@ public class MoblieRotate : MonoBehaviour {
 	public GameObject explosion;
 	public PathGenerator pathGen;
 	public TextMesh scoreTxt;
+	public Animator planeAnim;
+	public Animator bombshellAnim;
 	float speedUpMultiplier;
 	Vector3 initPos;
 	Quaternion initRot;
@@ -25,6 +27,10 @@ public class MoblieRotate : MonoBehaviour {
 	Button replay;
 
 	public int currentScore { get; set; }
+
+	void OnEnable () {
+		bombshellAnim.enabled = false;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -37,6 +43,7 @@ public class MoblieRotate : MonoBehaviour {
 
 		replay = GameObject.FindGameObjectWithTag("UI").transform.Find("replayButton").GetComponent<Button>();
 		replay.onClick.AddListener(OnReplayButton);
+		Invoke("StopPlane", 1f);
 	}
 
 	// Update is called once per frame
@@ -58,7 +65,7 @@ public class MoblieRotate : MonoBehaviour {
 		}
 #else
 		transform.Translate(Input.acceleration.x * (Time.deltaTime * speedPos), 0f, 0f, Space.World);
-		if (((-Input.acceleration.y) > 0.2f) || ((-Input.acceleration.y) < 0.2f))
+		if (((-Input.acceleration.y) > 0.3f) || ((-Input.acceleration.y) < 0.2f))
 			fallSpeed += (-Input.acceleration.y);
 
 		fallSpeed = Mathf.Clamp(fallSpeed, -1f, 1f);
@@ -107,18 +114,28 @@ public class MoblieRotate : MonoBehaviour {
 		scoreTxt.text = currentScore.ToString();
 	}
 
+	void StopPlane () {
+		planeAnim.Stop();
+		planeAnim.enabled = false;
+	}
+
 	public void OnReplayButton() {
 		transform.position = initPos;
 		transform.rotation = initRot;
 		cam.transform.position = initCamPos;
 		stopUpdatingCam = false;
 		currentScore = 0;
+		scoreTxt.text = currentScore.ToString();
 		fallSpeed = 0f;
 		gameObject.SetActive(true);
 		if (explosionInstance != null)
 			Destroy(explosionInstance);
 		pathGen.RandomGenerate();
 		replay.gameObject.SetActive(false);
+		bombshellAnim.enabled = true;
+		planeAnim.enabled = true;
+		planeAnim.Play("Planeanimation", 0, 0f);
+		bombshellAnim.Play("BombshellAnimation", 0, 0f);
 	}
 
 	void OnTriggerEnter2D (Collider2D other) {
@@ -129,7 +146,7 @@ public class MoblieRotate : MonoBehaviour {
 			currentScore -= 2;
 		}
 		else {
-			explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
+			explosionInstance = Instantiate(explosion, new Vector3(transform.position.x, -1002f, transform.position.z), Quaternion.identity);
 			gameObject.SetActive(false);
 			Invoke("ShowReplay", 1f);
 		}

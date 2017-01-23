@@ -10,7 +10,6 @@ public class Tutorial : MonoBehaviour {
 	void Awake () {
 		//Get a reference to ShowPanels attached to UI object
 		showPanels = GetComponent<ShowPanels> ();
-
 	}
 
 	public void TutorialClicked () {

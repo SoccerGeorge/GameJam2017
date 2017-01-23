@@ -2,6 +2,19 @@
 using System.Collections;
 
 public class QuitApplication : MonoBehaviour {
+	ShowPanels showPanels;										//Reference to ShowPanels script on UI GameObject, to show and hide panels
+
+	void Awake () {
+		//Get a reference to ShowPanels attached to UI object
+		showPanels = GetComponent<ShowPanels> ();
+	}
+
+	public void ShowCredits () {
+		showPanels.ShowCreditsPanel();
+		if (Time.timeScale == 0)
+			Time.timeScale = 1;
+		Invoke("Quit", 2f);
+	}
 
 	public void Quit()
 	{
